@@ -1,51 +1,31 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { guestRegex, isDevelopmentEnvironment } from "./lib/constants";
 
-export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN ?? "https://elevateetiquette.com";
 
-  if (pathname.startsWith("/ping")) {
-    return new Response("pong", { status: 200 });
+export function proxy(request: NextRequest) {
+  const response = NextResponse.next();
+  const origin = request.headers.get("origin");
+
+  // CORS for widget iframe
+  if (origin === ALLOWED_ORIGIN) {
+    response.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+    response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+    response.headers.set("Access-Control-Allow-Credentials", "true");
   }
 
-  if (pathname.startsWith("/api/auth")) {
-    return NextResponse.next();
+  // Handle preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: response.headers,
+    });
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: !isDevelopmentEnvironment,
-  });
-
-  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
-  if (!token) {
-    const redirectUrl = encodeURIComponent(new URL(request.url).pathname);
-
-    return NextResponse.redirect(
-      new URL(`${base}/api/auth/guest?redirectUrl=${redirectUrl}`, request.url)
-    );
-  }
-
-  const isGuest = guestRegex.test(token?.email ?? "");
-
-  if (token && !isGuest && ["/login", "/register"].includes(pathname)) {
-    return NextResponse.redirect(new URL(`${base}/`, request.url));
-  }
-
-  return NextResponse.next();
+  return response;
 }
 
-export const config = {
-  matcher: [
-    "/",
-    "/chat/:id",
-    "/api/:path*",
-    "/login",
-    "/register",
-
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-  ],
+export const proxyConfig = {
+  matcher: ["/api/:path*", "/widget/:path*"],
+  runtime: "nodejs",
 };
