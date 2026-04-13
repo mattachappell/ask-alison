@@ -1,10 +1,10 @@
-import { embed, embedMany } from "ai";
+import { embed, embedMany, gateway } from "ai";
 
 const EMBEDDING_MODEL = "openai/text-embedding-3-small";
 
 export async function generateEmbedding(text: string): Promise<number[]> {
   const { embedding } = await embed({
-    model: EMBEDDING_MODEL,
+    model: gateway.textEmbeddingModel(EMBEDDING_MODEL),
     value: text,
   });
   return embedding;
@@ -12,7 +12,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 
 export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
   const { embeddings } = await embedMany({
-    model: EMBEDDING_MODEL,
+    model: gateway.textEmbeddingModel(EMBEDDING_MODEL),
     values: texts,
   });
   return embeddings;
