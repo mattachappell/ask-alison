@@ -17,7 +17,7 @@ import {
   retrieveRelevantChunks,
 } from "@/lib/rag/retrieval";
 import { getOrCreateSessionUserId } from "@/lib/session/anonymous";
-import { chatRequestSchema } from "./schema";
+import { chatRequestSchema, extractMessageText } from "./schema";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -30,7 +30,13 @@ export async function POST(request: Request) {
   }
 
   const { id: chatId, message } = parsed.data;
-  const userText = message.content;
+  const userText = extractMessageText(message);
+
+  if (!userText) {
+    return new Response(JSON.stringify({ error: "Message text is required" }), {
+      status: 400,
+    });
+  }
 
   // Get or create anonymous user
   const userId = await getOrCreateSessionUserId();
