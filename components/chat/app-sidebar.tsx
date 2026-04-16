@@ -66,12 +66,12 @@ export function AppSidebar() {
               <div className="group/logo relative flex items-center justify-center">
                 <SidebarMenuButton
                   asChild
-                  className="size-8 !px-0 items-center justify-center group-data-[collapsible=icon]:group-hover/logo:opacity-0"
+                  className="size-10 !px-0 items-center justify-center group-data-[collapsible=icon]:group-hover/logo:opacity-0"
                   tooltip="Ask Alison"
                 >
                   <Link href="/" onClick={() => setOpenMobile(false)}>
-                    <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
-                      <span className="font-serif text-[9px] font-semibold text-primary">
+                    <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
+                      <span className="font-serif text-xs font-semibold text-primary">
                         EE
                       </span>
                     </span>
@@ -80,10 +80,10 @@ export function AppSidebar() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuButton
-                      className="pointer-events-none absolute inset-0 size-8 opacity-0 group-data-[collapsible=icon]:pointer-events-auto group-data-[collapsible=icon]:group-hover/logo:opacity-100"
+                      className="pointer-events-none absolute inset-0 size-10 opacity-0 group-data-[collapsible=icon]:pointer-events-auto group-data-[collapsible=icon]:group-hover/logo:opacity-100"
                       onClick={() => toggleSidebar()}
                     >
-                      <PanelLeftIcon className="size-4" />
+                      <PanelLeftIcon className="size-5" />
                     </SidebarMenuButton>
                   </TooltipTrigger>
                   <TooltipContent className="hidden md:block" side="right">
@@ -98,19 +98,19 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup className="pt-1">
+          <SidebarGroup className="pt-2">
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    className="h-8 rounded-lg border border-sidebar-border text-[13px] text-sidebar-foreground/70 transition-colors duration-150 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    className="h-10 rounded-lg border border-sidebar-border text-[13px] text-sidebar-foreground/70 transition-colors duration-150 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                     onClick={() => {
                       setOpenMobile(false);
                       router.push("/");
                     }}
                     tooltip="New Chat"
                   >
-                    <PenSquareIcon className="size-4" />
+                    <PenSquareIcon className="size-5" />
                     <span className="font-medium">New chat</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -120,7 +120,7 @@ export function AppSidebar() {
                     onClick={() => setShowDeleteAllDialog(true)}
                     tooltip="Delete All Chats"
                   >
-                    <TrashIcon className="size-4" />
+                    <TrashIcon className="size-5" />
                     <span className="text-[13px]">Delete all</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
