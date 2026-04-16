@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
-import { unstable_serialize } from "swr/infinite";
+import useSWRInfinite, { unstable_serialize } from "swr/infinite";
 import {
+  type ChatHistory,
   getChatHistoryPaginationKey,
   SidebarHistory,
 } from "@/components/chat/sidebar-history";
@@ -25,6 +26,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { fetcher } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +43,14 @@ export function AppSidebar() {
   const router = useRouter();
   const { setOpenMobile, toggleSidebar } = useSidebar();
   const { mutate } = useSWRConfig();
+  const { data: paginatedHistory } = useSWRInfinite<ChatHistory>(
+    getChatHistoryPaginationKey,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const hasChats = paginatedHistory
+    ? paginatedHistory.some((page) => page.chats.length > 0)
+    : false;
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
 
   const handleDeleteAll = () => {
@@ -114,16 +124,18 @@ export function AppSidebar() {
                     <span className="font-medium">New chat</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    className="rounded-lg text-sidebar-foreground/40 transition-colors duration-150 hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => setShowDeleteAllDialog(true)}
-                    tooltip="Delete All Chats"
-                  >
-                    <TrashIcon className="size-5" />
-                    <span className="text-[13px]">Delete all</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                {hasChats && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      className="rounded-lg text-sidebar-foreground/40 transition-colors duration-150 hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => setShowDeleteAllDialog(true)}
+                      tooltip="Delete All Chats"
+                    >
+                      <TrashIcon className="size-5" />
+                      <span className="text-[13px]">Delete all</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
