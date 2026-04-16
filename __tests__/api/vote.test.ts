@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 // Mock next/headers before importing the route handler
 vi.mock("next/headers", () => ({
