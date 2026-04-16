@@ -1,33 +1,46 @@
 "use client";
 
-import type { ComponentPropsWithoutRef, TextareaHTMLAttributes, Ref } from "react";
-import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef, TextareaHTMLAttributes } from "react";
+import { createContext, forwardRef, useContext } from "react";
 import { cn } from "@/lib/utils";
+
+const PromptInputContext = createContext<{ onSubmit?: () => void }>({});
 
 type PromptInputProps = ComponentPropsWithoutRef<"div"> & {
   onSubmit?: () => void;
 };
 
-export function PromptInput({ children, className, onSubmit: _onSubmit, ...props }: PromptInputProps) {
+export function PromptInput({ children, className, onSubmit, ...props }: PromptInputProps) {
   return (
-    <div className={cn("w-full", className)} {...props}>
-      <div className="flex flex-col">
-        {children}
+    <PromptInputContext.Provider value={{ onSubmit }}>
+      <div className={cn("w-full", className)} {...props}>
+        <div className="flex flex-col">
+          {children}
+        </div>
       </div>
-    </div>
+    </PromptInputContext.Provider>
   );
 }
 
 export const PromptInputTextarea = forwardRef<
   HTMLTextAreaElement,
   TextareaHTMLAttributes<HTMLTextAreaElement>
->(function PromptInputTextarea({ className, ...props }, ref) {
+>(function PromptInputTextarea({ className, onKeyDown, ...props }, ref) {
+  const { onSubmit } = useContext(PromptInputContext);
+
   return (
     <textarea
       className={cn(
         "w-full resize-none bg-transparent outline-none",
         className
       )}
+      onKeyDown={(e) => {
+        onKeyDown?.(e);
+        if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && !e.defaultPrevented) {
+          e.preventDefault();
+          onSubmit?.();
+        }
+      }}
       ref={ref}
       rows={3}
       {...props}
@@ -57,9 +70,17 @@ type PromptInputSubmitProps = ComponentPropsWithoutRef<"button"> & {
 };
 
 export function PromptInputSubmit({ children, className, status: _status, variant: _variant, ...props }: PromptInputSubmitProps) {
+  const { onSubmit } = useContext(PromptInputContext);
+
   return (
     <button
       className={cn("flex items-center justify-center", className)}
+      onClick={(e) => {
+        props.onClick?.(e);
+        if (!e.defaultPrevented && !props.disabled) {
+          onSubmit?.();
+        }
+      }}
       type="button"
       {...props}
     >
