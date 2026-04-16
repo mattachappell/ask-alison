@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
   let query = supabase
     .from("chat")
-    .select("id, title, user_id, created_at")
+    .select("id, title, user_id, created_at, visibility")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(limit + 1);
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
       id: c.id,
       title: c.title,
       userId: c.user_id,
-      visibility: "private",
+      visibility: c.visibility ?? "private",
       createdAt: c.created_at,
     })),
     hasMore,

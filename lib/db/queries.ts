@@ -79,6 +79,20 @@ export async function updateChatTitle(chatId: string, title: string) {
   }
 }
 
+export async function updateChatVisibilityById(
+  chatId: string,
+  visibility: "private" | "public"
+) {
+  const { error } = await supabase
+    .from("chat")
+    .update({ visibility })
+    .eq("id", chatId);
+
+  if (error) {
+    throw new Error(`Failed to update chat visibility: ${error.message}`);
+  }
+}
+
 export async function deleteChatById(chatId: string) {
   const { error } = await supabase.from("chat").delete().eq("id", chatId);
 

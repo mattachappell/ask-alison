@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { memo } from "react";
+import { toast } from "sonner";
 import { useChatVisibility } from "@/hooks/use-chat-visibility";
 import type { VisibilityType } from "./visibility-selector";
 
@@ -27,6 +28,7 @@ import {
 } from "../ui/sidebar";
 import {
   CheckCircleFillIcon,
+  CopyIcon,
   GlobeIcon,
   LockIcon,
   MoreHorizontalIcon,
@@ -106,6 +108,17 @@ const PureChatItem = ({
                     <span>Public</span>
                   </div>
                   {visibilityType === "public" ? <CheckCircleFillIcon /> : null}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => {
+                    const url = `${window.location.origin}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/chat/${chat.id}`;
+                    navigator.clipboard.writeText(url);
+                    toast.success("Link copied to clipboard!");
+                  }}
+                >
+                  <CopyIcon size={12} />
+                  <span>Copy link</span>
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuPortal>

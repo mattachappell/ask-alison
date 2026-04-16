@@ -3,7 +3,8 @@
 import { generateText, type UIMessage } from "ai";
 import { titlePrompt } from "@/lib/ai/prompts";
 import { getTitleModel } from "@/lib/ai/providers";
-import { deleteChatById } from "@/lib/db/queries";
+import { deleteChatById, updateChatVisibilityById } from "@/lib/db/queries";
+import { getOrCreateSessionUserId } from "@/lib/session/anonymous";
 import { getTextFromMessage } from "@/lib/utils";
 
 export async function generateTitleFromUserMessage({
@@ -31,10 +32,16 @@ export async function deleteTrailingMessages(_params: { id: string }) {
   // No-op: auth removed
 }
 
-// Stub — no auth/visibility in this project
-export async function updateChatVisibility(_params: {
+export async function updateChatVisibility({
+  chatId,
+  visibility,
+}: {
   chatId: string;
   visibility: string;
 }) {
-  // No-op: auth removed
+  if (visibility !== "private" && visibility !== "public") {
+    return;
+  }
+  await getOrCreateSessionUserId();
+  await updateChatVisibilityById(chatId, visibility);
 }
