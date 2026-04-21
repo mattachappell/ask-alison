@@ -62,7 +62,13 @@ function PureMessages({
   return (
     <div className="relative flex-1 bg-background">
       {messages.length === 0 && !isLoading && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+        // Layout invariant: on short viewports (e.g. iPhone SE 375x667) the
+        // sticky composer fills most of the height, leaving this Messages
+        // area as low as ~180px. `overflow-hidden` clips the flex-centered
+        // Greeting content so it cannot bleed into the suggestion buttons
+        // below; `z-0` is a secondary guard so the composer (z-1,
+        // bg-background) always paints on top if anything does escape.
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden px-4">
           <Greeting />
         </div>
       )}
